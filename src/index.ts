@@ -15,6 +15,8 @@ import {
   extractPropertyNameAtPosition,
   remapDefinitionInfo,
 } from './helpers/remapDefinition';
+import { getClassLocation } from './helpers/classLocationCache';
+import { readCssRuleAtLocation } from './helpers/cssRulePreview';
 
 const getPostCssConfigPlugins = (directory: string) => {
   try {
@@ -351,6 +353,46 @@ const init: tsModule.server.PluginModuleFactory = ({ typescript: ts }) => {
               ...result,
               definitions:
                 remapDefinitions(fileName, position, result.definitions) ?? [],
+            };
+          };
+        }
+
+        if (key === 'getQuickInfoAtPosition') {
+          return (fileName: string, position: number) => {
+            const quickInfo = target.getQuickInfoAtPosition(fileName, position);
+            const sourceText = getSnapshotText(fileName);
+            const className = sourceText
+              ? extractPropertyNameAtPosition(sourceText, position)
+              : undefined;
+            if (!className) return quickInfo;
+
+            const rawDefinitions = target.getDefinitionAtPosition(
+              fileName,
+              position,
+            );
+
+            let rule: string | undefined;
+            for (const definition of rawDefinitions ?? []) {
+              if (!isCSS(definition.fileName)) continue;
+              // Cache is keyed by the imported CSS module (pre-remap path).
+              const cached = getClassLocation(definition.fileName, className);
+              if (!cached) continue;
+              rule = readCssRuleAtLocation(cached.fileName, cached.line);
+              if (rule) break;
+            }
+
+            if (!rule) return quickInfo;
+
+            return {
+              kind: ts.ScriptElementKind.string,
+              kindModifiers: '',
+              textSpan: quickInfo?.textSpan ?? {
+                start: position,
+                length: className.length,
+              },
+              displayParts: [{ text: rule, kind: 'text' }],
+              documentation: quickInfo?.documentation,
+              tags: quickInfo?.tags,
             };
           };
         }

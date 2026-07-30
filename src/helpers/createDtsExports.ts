@@ -123,6 +123,9 @@ export const createDtsExports = ({
       .filter(([classname]) => isValidVariable(classname));
 
     filteredClasses.forEach(([classname, originalClassname]) => {
+      // composes values look like "local other"; search for the local token.
+      const searchName = originalClassname.split(/\s+/)[0] ?? originalClassname;
+
       let best:
         | {
             line: number;
@@ -138,7 +141,7 @@ export const createDtsExports = ({
           // - `.` for classnames,
           // - `:` or ` ` for animation names,
           // and any matches followed by valid CSS selector characters.
-          `[:.\\s]${originalClassname.replace(
+          `[:.\\s]${searchName.replace(
             /[.*+?^${}()|[\]\\]/g,
             '\\$&',
           )}(?![_a-zA-Z0-9-])`,
@@ -196,9 +199,11 @@ export const createDtsExports = ({
           classnameToInterface(classname) + classnameToNamedExport(classname);
       } else {
         // Keep types available on this module; definition remap sends navigation
-        // to the declaring file.
-        dtsLines[0] +=
-          classnameToInterface(classname) + classnameToNamedExport(classname);
+        // to the declaring file. Put each on its own trailing line to avoid
+        // ambiguous spans when several imports share line 0.
+        dtsLines.push(
+          classnameToInterface(classname) + classnameToNamedExport(classname),
+        );
       }
     });
 

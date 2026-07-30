@@ -11,7 +11,10 @@ import { getDtsSnapshot } from './helpers/getDtsSnapshot';
 import { createLogger } from './helpers/logger';
 import { getProcessor } from './helpers/getProcessor';
 import { filterPlugins } from './helpers/filterPlugins';
-import { remapDefinitionInfo } from './helpers/remapDefinition';
+import {
+  extractPropertyNameAtPosition,
+  remapDefinitionInfo,
+} from './helpers/remapDefinition';
 
 const getPostCssConfigPlugins = (directory: string) => {
   try {
@@ -299,10 +302,18 @@ const init: tsModule.server.PluginModuleFactory = ({ typescript: ts }) => {
     };
 
     const remapDefinitions = (
-      fileName: string,
+      sourceFileName: string,
+      position: number,
       definitions: readonly tsModule.DefinitionInfo[] | undefined,
     ): tsModule.DefinitionInfo[] | undefined => {
-      if (!definitions?.length) return definitions as tsModule.DefinitionInfo[] | undefined;
+      if (!definitions?.length) {
+        return definitions as tsModule.DefinitionInfo[] | undefined;
+      }
+
+      const sourceText = getSnapshotText(sourceFileName);
+      const classNameHint = sourceText
+        ? extractPropertyNameAtPosition(sourceText, position)
+        : undefined;
 
       return definitions.map((definition) => {
         if (!isCSS(definition.fileName)) return definition;
@@ -313,6 +324,7 @@ const init: tsModule.server.PluginModuleFactory = ({ typescript: ts }) => {
         return remapDefinitionInfo({
           definition,
           dtsText,
+          classNameHint,
           getSnapshotText,
           fileExists: (candidate) => fs.existsSync(candidate),
         });
@@ -327,7 +339,7 @@ const init: tsModule.server.PluginModuleFactory = ({ typescript: ts }) => {
               fileName,
               position,
             );
-            return remapDefinitions(fileName, definitions);
+            return remapDefinitions(fileName, position, definitions);
           };
         }
 
@@ -337,15 +349,14 @@ const init: tsModule.server.PluginModuleFactory = ({ typescript: ts }) => {
             if (!result) return result;
             return {
               ...result,
-              definitions: remapDefinitions(fileName, result.definitions) ?? [],
+              definitions:
+                remapDefinitions(fileName, position, result.definitions) ?? [],
             };
           };
         }
 
         const value = target[key as keyof tsModule.LanguageService];
-        return typeof value === 'function'
-          ? value.bind(target)
-          : value;
+        return typeof value === 'function' ? value.bind(target) : value;
       },
     });
 

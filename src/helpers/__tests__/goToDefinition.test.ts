@@ -6,7 +6,7 @@ import { getCssExports } from '../getCssExports';
 import { getProcessor } from '../getProcessor';
 import { setClassLocations } from '../classLocationCache';
 import {
-  extractClassNameFromDts,
+  extractPropertyNameAtPosition,
   lineToTextSpan,
   remapDefinitionInfo,
 } from '../remapDefinition';
@@ -54,7 +54,17 @@ describe('helpers / goToDefinition locations', () => {
     });
   });
 
-  it('remaps a definition into the declaring CSS module file', () => {
+  it('reads the clicked property name from source', () => {
+    const source = `const x = classes.class2;\nconst y = classes['class1'];\n`;
+    expect(
+      extractPropertyNameAtPosition(source, source.indexOf('class2') + 2),
+    ).toBe('class2');
+    expect(
+      extractPropertyNameAtPosition(source, source.indexOf("'class1'") + 3),
+    ).toBe('class1');
+  });
+
+  it('remaps using the clicked class even if the dts span points at another class', () => {
     const css = readFileSync(fileB, 'utf8');
     const cssExports = getCssExports({
       css,
@@ -74,15 +84,15 @@ describe('helpers / goToDefinition locations', () => {
     });
     setClassLocations(fileB, classLocations);
 
-    const class1Index = dts.indexOf("'class1'");
-    expect(class1Index).toBeGreaterThan(-1);
-    expect(extractClassNameFromDts(dts, class1Index)).toBe('class1');
+    // Simulate TS pointing at class2 in the virtual dts while the user clicked class1.
+    const class2Index = dts.indexOf("'class2'");
+    expect(class2Index).toBeGreaterThan(-1);
 
     const definition = {
       fileName: fileB,
-      textSpan: { start: class1Index, length: 8 },
+      textSpan: { start: class2Index, length: 8 },
       kind: 'const' as tsModule.ScriptElementKind,
-      name: 'class1',
+      name: 'class2',
       containerKind: '' as tsModule.ScriptElementKind,
       containerName: '',
     };
@@ -95,11 +105,13 @@ describe('helpers / goToDefinition locations', () => {
     const remapped = remapDefinitionInfo({
       definition,
       dtsText: dts,
+      classNameHint: 'class1',
       getSnapshotText: (name) => snapshots[name],
       fileExists: (name) => name in snapshots,
     });
 
     expect(remapped.fileName).toBe(fileA);
+    expect(remapped.name).toBe('class1');
     expect(remapped.textSpan).toEqual(lineToTextSpan(snapshots[fileA], 1));
   });
 });

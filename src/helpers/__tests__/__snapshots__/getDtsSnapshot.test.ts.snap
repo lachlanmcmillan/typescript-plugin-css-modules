@@ -613,39 +613,35 @@ export type AllClassNames = 'local-class-inside-global' | 'local-class' | 'local
 `;
 
 exports[`helpers / cssSnapshots with goToDefinition enabled with CSS should return a line-accurate dts file 1`] = `
-"export let classA: string;export let composed: string;export let composedFromOtherFile: string;
+"interface _CSSModules { 'classA': string; }export let classA: string;interface _CSSModules { 'composed': string; }export let composed: string;interface _CSSModules { 'composedFromOtherFile': string; }export let composedFromOtherFile: string;
 
 
 
-export let classB: string;
+interface _CSSModules { 'classB': string; }export let classB: string;
 
 
 
-export let classC: string;
+interface _CSSModules { 'classC': string; }export let classC: string;
 
 
 
-export let classD: string;
-
-
-
-
-
-export let parent: string;export let childA: string;
-
-
-
-export let childB: string;export let nestedChild: string;
+interface _CSSModules { 'classD': string; }export let classD: string;
 
 
 
 
 
-export let fadeIn: string;
+interface _CSSModules { 'parent': string; }export let parent: string;interface _CSSModules { 'childA': string; }export let childA: string;
+
+
+
+interface _CSSModules { 'childB': string; }export let childB: string;interface _CSSModules { 'nestedChild': string; }export let nestedChild: string;
 
 
 
 
+
+interface _CSSModules { 'fadeIn': string; }export let fadeIn: string;
 
 
 
@@ -654,19 +650,12 @@ export let fadeIn: string;
 
 
 
-declare let _classes: {
-  'classA': string;
-  'classB': string;
-  'classC': string;
-  'classD': string;
-  'parent': string;
-  'childA': string;
-  'childB': string;
-  'nestedChild': string;
-  'composed': string;
-  'composedFromOtherFile': string;
-  'fadeIn': string;
-};
+
+
+
+
+interface _CSSModules {}
+declare let _classes: _CSSModules;
 export default _classes;
 "
 `;
@@ -789,24 +778,7 @@ exports[`helpers / cssSnapshots with goToDefinition enabled with CSS should retu
 `;
 
 exports[`helpers / cssSnapshots with goToDefinition enabled with Less should return a line-accurate dts file 1`] = `
-"export let nestedClassParent: string;export let childClass: string;
-
-
-
-
-
-
-
-
-
-
-export let selectorBlue: string;export let selectorGreen: string;export let selectorRed: string;
-
-
-
-
-
-export let column1: string;export let column2: string;export let column3: string;export let column4: string;
+"interface _CSSModules { 'nestedClassParent': string; }export let nestedClassParent: string;interface _CSSModules { 'childClass': string; }export let childClass: string;interface _CSSModules { 'selectorBlue': string; }export let selectorBlue: string;interface _CSSModules { 'selectorGreen': string; }export let selectorGreen: string;interface _CSSModules { 'selectorRed': string; }export let selectorRed: string;interface _CSSModules { 'column1': string; }export let column1: string;interface _CSSModules { 'column2': string; }export let column2: string;interface _CSSModules { 'column3': string; }export let column3: string;interface _CSSModules { 'column4': string; }export let column4: string;interface _CSSModules { 'colorSet': string; }export let colorSet: string;
 
 
 
@@ -818,22 +790,29 @@ export let column1: string;export let column2: string;export let column3: string
 
 
 
-export let colorSet: string;
 
 
 
-declare let _classes: {
-  'nestedClassParent': string;
-  'childClass': string;
-  'selectorBlue': string;
-  'selectorGreen': string;
-  'selectorRed': string;
-  'column1': string;
-  'column2': string;
-  'column3': string;
-  'column4': string;
-  'colorSet': string;
-};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+interface _CSSModules {}
+declare let _classes: _CSSModules;
 export default _classes;
 "
 `;
@@ -900,28 +879,23 @@ exports[`helpers / cssSnapshots with goToDefinition enabled with Less should ret
 `;
 
 exports[`helpers / cssSnapshots with goToDefinition enabled with Sass should return a line-accurate dts file 1`] = `
-"
+"interface _CSSModules { 'localClassInsideGlobal': string; }export let localClassInsideGlobal: string;interface _CSSModules { 'localClass': string; }export let localClass: string;interface _CSSModules { 'localClass2': string; }export let localClass2: string;interface _CSSModules { 'localClassInsideLocal': string; }export let localClassInsideLocal: string;interface _CSSModules { 'reservedWords': string; }export let reservedWords: string;interface _CSSModules { 'nestedClassParent': string; }export let nestedClassParent: string;interface _CSSModules { 'childClass': string; }export let childClass: string;interface _CSSModules { 'nestedClassParentExtended': string; }export let nestedClassParentExtended: string;interface _CSSModules { 'section1': string; }export let section1: string;interface _CSSModules { 'section2': string; }export let section2: string;interface _CSSModules { 'section3': string; }export let section3: string;interface _CSSModules { 'section4': string; }export let section4: string;interface _CSSModules { 'section5': string; }export let section5: string;interface _CSSModules { 'section6': string; }export let section6: string;interface _CSSModules { 'section7': string; }export let section7: string;interface _CSSModules { 'section8': string; }export let section8: string;interface _CSSModules { 'section9': string; }export let section9: string;interface _CSSModules { 'classWithMixin': string; }export let classWithMixin: string;interface _CSSModules { 'appLogo': string; }export let appLogo: string;interface _CSSModules { 'appLogo': string; }export let appLogo: string;interface _CSSModules { 'myAnimation': string; }export let myAnimation: string;interface _CSSModules { 'myFolderIndex': string; }export let myFolderIndex: string;
 
-export let myFolderIndex: string;
 
 
-export let localClassInsideGlobal: string;
 
 
 
 
-export let localClass: string;
 
 
 
 
-export let localClass2: string;export let localClassInsideLocal: string;
 
 
 
 
 
-export let reservedWords: string;
 
 
 
@@ -930,10 +904,8 @@ export let reservedWords: string;
 
 
 
-export let nestedClassParent: string;export let childClass: string;
 
 
-export let nestedClassParentExtended: string;
 
 
 
@@ -941,25 +913,20 @@ export let nestedClassParentExtended: string;
 
 
 
-export let section1: string;export let section2: string;export let section3: string;export let section4: string;export let section5: string;export let section6: string;export let section7: string;export let section8: string;export let section9: string;
 
 
 
 
 
 
-export let classWithMixin: string;
 
 
 
-export let appLogo: string;
 
 
 
 
 
-export let appLogo: string;
-export let myAnimation: string;
 
 
 
@@ -992,32 +959,20 @@ export let myAnimation: string;
 
 
 
-declare let _classes: {
-  'localClassInsideGlobal': string;
-  'localClass': string;
-  'localClass2': string;
-  'localClassInsideLocal': string;
-  'reservedWords': string;
-  'default': string;
-  'const': string;
-  'nestedClassParent': string;
-  'childClass': string;
-  'nestedClassParentExtended': string;
-  'section1': string;
-  'section2': string;
-  'section3': string;
-  'section4': string;
-  'section5': string;
-  'section6': string;
-  'section7': string;
-  'section8': string;
-  'section9': string;
-  'classWithMixin': string;
-  'appLogo': string;
-  'appLogo': string;
-  'myAnimation': string;
-  'myFolderIndex': string;
-};
+
+
+
+
+
+
+
+
+
+
+
+
+interface _CSSModules {}
+declare let _classes: _CSSModules;
 export default _classes;
 "
 `;

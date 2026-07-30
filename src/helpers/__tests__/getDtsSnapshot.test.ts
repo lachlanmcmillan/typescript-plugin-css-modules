@@ -72,7 +72,7 @@ describe('helpers / cssSnapshots', () => {
 
       describe('createExports', () => {
         it('should create an exports file', () => {
-          const dts = createDtsExports({
+          const { dts } = createDtsExports({
             cssExports,
             fileName,
             logger,
@@ -92,7 +92,7 @@ describe('helpers / cssSnapshots', () => {
 
           const options: Options = { customTemplate };
 
-          const dts = createDtsExports({
+          const { dts } = createDtsExports({
             cssExports,
             fileName,
             logger,
@@ -312,7 +312,7 @@ describe('helpers / cssSnapshots', () => {
     });
 
     it('should return a line-accurate dts file', () => {
-      const dts = createDtsExports({
+      const { dts } = createDtsExports({
         cssExports,
         fileName,
         logger,
@@ -341,7 +341,7 @@ describe('helpers / cssSnapshots', () => {
     });
 
     it('should return a dts file with only possibly undefined strings', () => {
-      const dts = createDtsExports({
+      const { dts } = createDtsExports({
         cssExports,
         fileName,
         logger,
@@ -370,7 +370,7 @@ describe('helpers / cssSnapshots', () => {
     });
 
     it('should return a dts file that allows any string value', () => {
-      const dts = createDtsExports({
+      const { dts } = createDtsExports({
         cssExports,
         fileName,
         logger,
@@ -398,7 +398,7 @@ describe('helpers / cssSnapshots', () => {
     });
 
     it('should return a dts file that contains additional data', () => {
-      const dts = createDtsExports({
+      const { dts } = createDtsExports({
         cssExports,
         fileName,
         logger,

@@ -11,6 +11,7 @@ import { getDtsSnapshot } from './helpers/getDtsSnapshot';
 import { createLogger } from './helpers/logger';
 import { getProcessor } from './helpers/getProcessor';
 import { filterPlugins } from './helpers/filterPlugins';
+import { remapDefinitionInfo } from './helpers/remapDefinition';
 
 const getPostCssConfigPlugins = (directory: string) => {
   try {
@@ -285,7 +286,70 @@ const init: tsModule.server.PluginModuleFactory = ({ typescript: ts }) => {
       };
     }
 
-    return languageService;
+    if (!options.goToDefinition) {
+      return languageService;
+    }
+
+    const getSnapshotText = (fileName: string): string | undefined => {
+      const snapshot =
+        languageServiceHostProxy.getScriptSnapshot?.(fileName) ??
+        info.languageServiceHost.getScriptSnapshot?.(fileName);
+      if (!snapshot) return undefined;
+      return snapshot.getText(0, snapshot.getLength());
+    };
+
+    const remapDefinitions = (
+      fileName: string,
+      definitions: readonly tsModule.DefinitionInfo[] | undefined,
+    ): tsModule.DefinitionInfo[] | undefined => {
+      if (!definitions?.length) return definitions as tsModule.DefinitionInfo[] | undefined;
+
+      return definitions.map((definition) => {
+        if (!isCSS(definition.fileName)) return definition;
+
+        const dtsText = getSnapshotText(definition.fileName);
+        if (dtsText == null) return definition;
+
+        return remapDefinitionInfo({
+          definition,
+          dtsText,
+          getSnapshotText,
+          fileExists: (candidate) => fs.existsSync(candidate),
+        });
+      });
+    };
+
+    const languageServiceProxy = new Proxy(languageService, {
+      get(target, key: keyof tsModule.LanguageService | symbol) {
+        if (key === 'getDefinitionAtPosition') {
+          return (fileName: string, position: number) => {
+            const definitions = target.getDefinitionAtPosition(
+              fileName,
+              position,
+            );
+            return remapDefinitions(fileName, definitions);
+          };
+        }
+
+        if (key === 'getDefinitionAndBoundSpan') {
+          return (fileName: string, position: number) => {
+            const result = target.getDefinitionAndBoundSpan(fileName, position);
+            if (!result) return result;
+            return {
+              ...result,
+              definitions: remapDefinitions(fileName, result.definitions) ?? [],
+            };
+          };
+        }
+
+        const value = target[key as keyof tsModule.LanguageService];
+        return typeof value === 'function'
+          ? value.bind(target)
+          : value;
+      },
+    });
+
+    return languageServiceProxy;
   }
 
   function getExternalFiles(

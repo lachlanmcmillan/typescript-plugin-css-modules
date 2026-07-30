@@ -1,3 +1,51 @@
+# Slopfork of typescript-plugin-css-modules
+
+Fork of [`mrmckeb/typescript-plugin-css-modules`](https://github.com/mrmckeb/typescript-plugin-css-modules)
+
+**All code written by Grok 4.5 in Cursor**
+
+Incorporates three fixes:
+
+1. **CSS `@import` class exports** — When `fileB.module.css` `@import`s `fileA.module.css`, classes from both files are available on the `fileB` import (matching Vite / css-loader).
+2. **Go to definition fixed** — cmd+click on a class now jumps to the declaring CSS rule (including across `@import`ed files) requires options.goToDefinition: true in settings.
+3. **Cmd+hover fixed** – cmd+hover shows the CSS of the hovered class
+
+### Install from this fork
+
+The `release` branch includes a built `dist/` (needed because this is not on NPM):
+
+```bash
+# Bun
+bun add -d github:lachlanmcmillan/typescript-plugin-css-modules#d05d754218e3d3a0c8a7f97962f8fc9768191352
+# npm
+npm i -D github:lachlanmcmillan/typescript-plugin-css-modules#d05d754218e3d3a0c8a7f97962f8fc9768191352
+# pnpm
+pnpm add -D github:lachlanmcmillan/typescript-plugin-css-modules#d05d754218e3d3a0c8a7f97962f8fc9768191352
+```
+
+Prefer pinning the commit SHA for reproducible installs.
+
+Enable go-to-definition in `tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    "plugins": [
+      {
+        "name": "typescript-plugin-css-modules",
+        "options": {
+          "goToDefinition": true
+        }
+      }
+    ]
+  }
+}
+```
+
+Then restart the TypeScript server in VSCode/Cursor.
+
+---
+
 # typescript-plugin-css-modules
 
 [![npm](https://img.shields.io/npm/v/typescript-plugin-css-modules)](https://www.npmjs.com/package/typescript-plugin-css-modules)
